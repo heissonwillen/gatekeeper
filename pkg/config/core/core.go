@@ -26,6 +26,7 @@ type Configs interface {
 	GetMatchClaims() map[string]string
 	GetTags() map[string]string
 	GetAllowedQueryParams() map[string]string
+	GetDefaultQueryParams() map[string]string
 }
 
 type CommonConfig struct{}

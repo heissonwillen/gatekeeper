@@ -248,6 +248,14 @@ func parseCLIOptions(cliCtx *cli.Context, config core.Configs) error {
 		utils.MergeMaps(config.GetAllowedQueryParams(), headers)
 	}
 
+	if cliCtx.IsSet("default-query-params") {
+		headers, err := utils.DecodeKeyPairs(cliCtx.StringSlice("default-query-params"))
+		if err != nil {
+			return err
+		}
+		utils.MergeMaps(config.GetDefaultQueryParams(), headers)
+	}
+
 	if cliCtx.IsSet("resources") {
 		for _, x := range cliCtx.StringSlice("resources") {
 			resource, err := authorization.NewResource().Parse(x)
