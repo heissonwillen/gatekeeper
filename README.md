@@ -123,7 +123,7 @@ EOF
 
 2. Check fingerprint of public key, you should see **C9033D68E25998739DFDAA08DA2AAC79658B0C73** there:
 
-```
+```bash
 cat /tmp/gpg|gpg --import-options show-only --import
 pub   rsa4096 2021-02-22 [SC]
       C9033D68E25998739DFDAA08DA2AAC79658B0C73
@@ -134,13 +134,13 @@ sub   rsa4096 2021-02-22 [E]
 
 3. Import gpg public key
 
-```
+```bash
 cat /tmp/gpg | gpg --import
 ```
 
 4. Verify signature
 
-```
+```bash
 gpg --verify gatekeeper-checksum.txt.sig
 ```
 

@@ -15,7 +15,7 @@ following at the command line (modify the location to match where you
 install Gatekeeper Proxy):
 
 ``` bash
-    $ bin/gatekeeper help
+bin/gatekeeper help
 ```
 
 You can view all settings also in this table [Settings](https://gogatekeeper.github.io/gatekeeper/configuration/)
@@ -218,10 +218,10 @@ If you have roles listed in some custom claim, please see [custom claim matching
 
 You can use gatekeeper to protect APIs, frontend server applications, frontend client applications.
 Frontend server-side applications can be protected by Authorization Code Flow (also with PKCE), during which several redirection
-steps take place. For protecting APIs you can use Client Credentials Grant to avoid redirections steps
+steps take place. For protecting APIs you can use Client Credentials Grant to avoid redirects steps
 involved in authorization code flow you have to use `--no-redirects=true`. For frontend applications
-you can use Authorization Code Flow (also with PKCE) with encrypted refresh token cookies enabled, in this case however you have to handle redirections
-at login/logout and you must make cookies available to js (less secure, altough at least they are encrypted).
+you can use Authorization Code Flow (also with PKCE) with encrypted refresh token cookies enabled, in this case however you have to handle redirects
+at login/logout and you must make cookies available to js (less secure, although at least they are encrypted).
 
 ## Default Deny
 
@@ -327,11 +327,11 @@ yaml example:
 
 ## TCP proxy with HTTP CONNECT
 
-You can protect your TCP services with gogatekeeper by adding `CONNECT` HTTP method to list of `custom-http-methods`. On client side you will need to pass of course token in `Authorization` header (righ now there are few clients which could make HTTP connect with `Bearer` token and then forward tcp, e.g. gost proxy - but only in static way, some IDE provide HTTP CONNECT functionality for db connectors but only with `Basic` authentication, we would like to add this functionality to gatekeeper in future). This setup will authenticate connection at start and will create tunnel to your backend service. Please use with care and ensure that it allows connection only to intended services, otherwise it can be missused for various attacks.
+You can protect your TCP services with gogatekeeper by adding `CONNECT` HTTP method to list of `custom-http-methods`. On client side you will need to pass of course token in `Authorization` header (right now there are few clients which could make HTTP connect with `Bearer` token and then forward tcp, e.g. gost proxy - but only in static way, some IDE provide HTTP CONNECT functionality for db connectors but only with `Basic` authentication, we would like to add this functionality to gatekeeper in future). This setup will authenticate connection at start and will create tunnel to your backend service. Please use with care and ensure that it allows connection only to intended services, otherwise it can be misused for various attacks.
 
 This example allows users with valid token to connect to backend postgres service:
 
-```
+```bash
   "--discovery-url=http://127.0.0.1:8081/realms/test/.well-known/openid-configuration",
   "--client-id=test-client",
   "--client-secret=6447d0c0-d510-42a7-b654-6e3a16b2d7e2",
@@ -353,7 +353,7 @@ This example allows users with valid token to connect to backend postgres servic
 
 Configuration for gost proxy, to forward your tcp client connection with HTTP CONNECT, please be aware that you need to input there your token (there is only example token in this config):
 
-```
+```bash
 cat > config.yaml <<EOF
 services:
 - name: service-0
@@ -387,13 +387,13 @@ EOF
 
 start gost proxy:
 
-```
+```bash
 gost -C config.yaml
 ```
 
 Connect with psql client:
 
-```
+```bash
 psql -U postgres -h localhost -p 8000
 ```
 
@@ -415,7 +415,7 @@ signature which gatekeeper expects when used as auth/authz proxy, you can create
 this signature on your own, assuming you have proper secret. Signature is passed
 in `X-HMAC-SHA256` header. Signature is created by signing several fields:
 
-```
+```golang
 	stringToSign := fmt.Sprintf(
 		"%s\n%s%s\n%s;%s;%s",
 		req.Method,
@@ -447,7 +447,7 @@ You have a collection of micro-services which are permitted to speak to
 one another; you have already set up the credentials, roles, and clients
 in Keycloak, providing granular role controls over issue tokens.
 
-``` yaml
+```yaml
 - name: gatekeeper
   image: quay.io/gogatekeeper/gatekeeper:2.11.0
   args:
@@ -469,12 +469,11 @@ in Keycloak, providing granular role controls over issue tokens.
     mountPoint: /var/run/keycloak
 - name: projecta
   image: some_images
-
 ```
 
 Example setup client credentials grant:
 
-``` yaml
+```yaml
 - name: gatekeeper
   image: quay.io/gogatekeeper/gatekeeper:2.11.0
   args:
@@ -495,11 +494,10 @@ Example setup client credentials grant:
     mountPoint: /var/run/keycloak
 - name: projecta
   image: some_images
-
 ```    
 Test the forward proxy:
 
-```
+```bash
 curl -k --proxy http://127.0.0.1:3000 https://test.projesta.svc.cluster.local
 ```
 
@@ -515,9 +513,9 @@ default, if no `--tls-ca-certificate` and `--tls-ca-key` are provided
 the proxy will use the default certificate. If you wish to verify the
 trust, you’ll need to generate a CA, for example.
 
-``` bash
-$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ca.key -out ca.pem
-$ bin/gatekeeper \
+```bash
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ca.key -out ca.pem
+bin/gatekeeper \
   --enable-forwarding \
   --forwarding-username=USERNAME \
   --forwarding-password=PASSWORD \
@@ -538,7 +536,7 @@ The proxy supports an HTTP listener, so the only real requirement here
 is to perform an HTTP → HTTPS redirect. You can enable the option like
 this:
 
-``` bash
+```bash
 --listen-http=127.0.0.1:80
 --enable-security-filter=true  # is required for the https redirect
 --enable-https-redirection
@@ -549,7 +547,7 @@ this:
 Here is an example of the required configuration for Let’s Encrypt
 support:
 
-``` yaml
+```yaml
 listen: 0.0.0.0:443
 enable-https-redirection: true
 enable-security-filter: true
@@ -602,13 +600,15 @@ upstream headers with the `--add-claims` option. For example, a
 token from a Keycloak provider might include the following
 claims:
 
-``` yaml
-"resource_access": {},
-"name": "Beloved User",
-"preferred_username": "beloved.user",
-"given_name": "Beloved",
-"family_name": "User",
-"email": "beloved@example.com"
+```json
+{
+  "resource_access": {},
+  "name": "Beloved User",
+  "preferred_username": "beloved.user",
+  "given_name": "Beloved",
+  "family_name": "User",
+  "email": "beloved@example.com"
+}
 ```
 
 In order to request you receive the *given\_name*, *family\_name*, and name
@@ -616,7 +616,7 @@ in the authentication header, we would add `--add-claims=given_name` and
 `--add-claims=family_name` and so on, or we can do it in the
 configuration file, like this:
 
-``` yaml
+```yaml
 add-claims:
 - given_name
 - family_name
@@ -626,7 +626,7 @@ add-claims:
 This would add the additional headers to the authenticated request along
 with standard ones.
 
-``` bash
+```bash
 X-Auth-Family-Name: User
 X-Auth-Given-Name: Beloved
 X-Auth-Name: Beloved User
@@ -637,8 +637,10 @@ X-Auth-Name: Beloved User
 You can inject custom headers using the `--headers="name=value"` option
 or the configuration file:
 
-    headers:
-      name: value
+```yaml
+headers:
+  name: value
+```
 
 ## OpenID provider headers
 
@@ -668,8 +670,7 @@ bytes, depending or whether you want *AES-128* or *AES-256*.
 The proxy supports adding a variable list of claim matches against the
 presented tokens for additional access control. You can match the 'iss'
 or 'aud' to the token or custom attributes; each of the matches are
-regexes. For example, `--match-claims 'aud=sso.*'` or `--claim
-iss=https://.*'` or via the configuration file, like this:
+regexes. For example, `--match-claims 'aud=sso.*'` or `--claim iss=https://.*'` or via the configuration file, like this:
 
 ``` yaml
 match-claims:
@@ -679,7 +680,7 @@ match-claims:
 
 or via the CLI, like this:
 
-``` bash
+```bash
 --match-claims=auth=openvpn
 --match-claims=iss=http://keycloak.example.com/realms/commons
 ```
@@ -687,7 +688,7 @@ or via the CLI, like this:
 You can limit the email domain permitted; for example, if you want to
 limit to only users on the example.com domain:
 
-``` yaml
+```yaml
 match-claims:
   email: ^.*@example.com$
 ```
@@ -695,14 +696,14 @@ match-claims:
 The adapter supports matching on multi-value strings claims. The match
 will succeed if one of the values matches, for example:
 
-``` yaml
+```yaml
 match-claims:
   perms: perm1
 ```
 
 will successfully match
 
-``` json
+```json
 {
   "iss": "https://sso.example.com",
   "sub": "",
@@ -720,7 +721,7 @@ required, such as `roles=admin,user` where the user MUST have roles
 'users' OR 'testers'. The claim name is hard-coded to `groups`, so a *JWT*
 token would look like this:
 
-``` json
+```json
 {
   "iss": "https://sso.example.com",
   "sub": "",
@@ -754,7 +755,7 @@ and enabling `--no-proxy` option (this option will not forward request to upstre
 
 Example:
 
-traefik forward-auth configuration when you don't want to redirect user to authentication 
+Traefik forward-auth configuration when you don't want to redirect user to authentication 
 server by gatekeeper (useful for e.g. API authentication or when you are using redirect
 to keycloak server on front proxy)
 
@@ -785,7 +786,7 @@ gatekeeper configuration
       - --resources=headers=x-some-header:somevalue,x-other-header:othervalue
 ```
 
-traefik forward-auth configuration when you WANT to redirect user to authentication 
+Traefik forward-auth configuration when you WANT to redirect user to authentication 
 server by gatekeeper (useful for e.g. frontend application authentication). Please be
 aware that in this mode you need to forward headers X-Forwarded-Host, X-Forwarded-Uri, X-Forwarded-Proto, from
 front proxy to gatekeeper. You can find more complete example [here](https://github.com/gogatekeeper/gatekeeper/blob/master/e2e/k8s/manifest_test_forwardauth.yml). 
@@ -928,7 +929,7 @@ One use case for this is that: inside keycloak server have "required user action
 
 You can use built-in template or your custom:
 
-```
+```bash
 --error-page=templates/error.html.tmpl
 ```
 
@@ -939,7 +940,7 @@ protect the root / URL but have exceptions on a list of paths, for
 example `/health`. While this is best solved by adjusting the paths, you
 can add exceptions to the protected resources, like this:
 
-``` yaml
+```yaml
   resources:
   - uri: /some_white_listed_url
     white-listed: true
@@ -953,9 +954,9 @@ can add exceptions to the protected resources, like this:
 
 Or on the command line
 
-``` bash
-  --resources "uri=/some_white_listed_url|white-listed=true"
-  --resources "uri=/*"  # requires authentication on the rest
+```bash
+  --resources "uri=/some_white_listed_url|white-listed=true" \
+  --resources "uri=/*"  # requires authentication on the rest \
   --resources "uri=/admin*|roles=admin,superuser|methods=POST,DELETE"
 ```
 
@@ -1053,7 +1054,7 @@ configuration options.
 
 You can add using the config file:
 
-``` yaml
+```yaml
 cors-origins:
 - '*'
 cors-methods:
@@ -1063,7 +1064,7 @@ cors-methods:
 
 or via the command line:
 
-``` bash
+```bash
 --cors-origins [--cors-origins option]                  a set of origins to add to the CORS access control (Access-Control-Allow-Origin)
 --cors-methods [--cors-methods option]                  the method permitted in the access control (Access-Control-Allow-Methods)
 --cors-headers [--cors-headers option]                  a set of headers to add to the CORS access control (Access-Control-Allow-Headers)
@@ -1141,7 +1142,7 @@ Example gatekeeper configuration:
 
 Example OPA policy, with upper gatekeeper configuration and request would result allowing request to upstream:
 
-```
+```golang
   package authz
 
   default allow := false

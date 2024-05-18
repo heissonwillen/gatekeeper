@@ -6,7 +6,7 @@ Please use this template when submitting a new feature request with as much deta
 The same title used to create the issue (optional)
 -->
 
-## Summary 
+## Summary
 
 <!-- 
 A quick summary about the feature request or bug fix with issue number. Ex: Add a new logging system described in #<issue number> 
@@ -14,10 +14,10 @@ A quick summary about the feature request or bug fix with issue number. Ex: Add 
 
 ## Type
 
-[] Bug fix
-[] Feature request
-[] Enhancement
-[] Docs
+- [ ] Bug fix
+- [ ] Feature request
+- [ ] Enhancement
+- [ ] Docs
 
 ## Why?
 
