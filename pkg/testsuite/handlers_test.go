@@ -1019,6 +1019,73 @@ func TestAuthorizationURL(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name: "TestDefaultQueryParamsOneKeyValue",
+			ProxySettings: func(conf *config.Config) {
+				conf.NoRedirects = false
+				conf.DefaultQueryParams = map[string]string{
+					"defaultKey1": "defaultValue1",
+				}
+			},
+			ExecutionSettings: []fakeRequest{
+				{
+					URI:              "/admin?nonDefaultKey1=nonDefaultValue1",
+					Redirects:        true,
+					ExpectedLocation: "defaultKey1=defaultValue1",
+					ExpectedHeadersValidator: map[string]func(*testing.T, *config.Config, string){
+						"Location": func(t *testing.T, c *config.Config, value string) {
+							assert.NotContains(t, value, "nonDefaultKey1=nonDefaultValue1")
+						},
+					},
+					ExpectedCode: http.StatusSeeOther,
+				},
+			},
+		},
+		{
+			Name: "TestDefaultQueryParamsOneKeyOverrideValue",
+			ProxySettings: func(conf *config.Config) {
+				conf.NoRedirects = false
+				conf.DefaultQueryParams = map[string]string{
+					"defaultKey": "defaultValue",
+				}
+			},
+			ExecutionSettings: []fakeRequest{
+				{
+					URI:          "/admin?defaultKey=tryingToOverride&nonDefaultKey=doesntMatter",
+					Redirects:    true,
+					ExpectedHeadersValidator: map[string]func(*testing.T, *config.Config, string){
+						"Location": func(t *testing.T, c *config.Config, value string) {
+							assert.Contains(t, value, "defaultKey=defaultValue")
+							assert.NotContains(t, value, "nonDefaultKey=doesntMatter")
+						},
+					},
+					ExpectedCode: http.StatusSeeOther,
+				},
+			},
+		},
+		{
+			Name: "TestDefaultQueryParamsMultipleKeyValue",
+			ProxySettings: func(conf *config.Config) {
+				conf.NoRedirects = false
+				conf.DefaultQueryParams = map[string]string{
+					"defaultKey1":  "defaultValue1",
+					"defaultKey2": "defaultValue2",
+				}
+			},
+			ExecutionSettings: []fakeRequest{
+				{
+					URI:       "/admin?defaultKey1=defaultValue1&defaultKey2=defaultValue2",
+					Redirects: true,
+					ExpectedHeadersValidator: map[string]func(*testing.T, *config.Config, string){
+						"Location": func(t *testing.T, c *config.Config, value string) {
+							assert.Contains(t, value, "defaultKey1=defaultValue1")
+							assert.Contains(t, value, "defaultKey2=defaultValue2")
+						},
+					},
+					ExpectedCode: http.StatusSeeOther,
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

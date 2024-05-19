@@ -2519,3 +2519,45 @@ func TestIsAllowedQueryParamsValid(t *testing.T) {
 		)
 	}
 }
+
+func TestIsDefaultQueryParamsValid(t *testing.T) {
+	testCases := []struct {
+		Name   string
+		Config *Config
+		Valid  bool
+	}{
+		{
+			Name: "DefaultQueryParamsValidValid",
+			Config: &Config{
+				DefaultQueryParams: map[string]string{"this": "that"},
+				NoRedirects:        false,
+			},
+			Valid: true,
+		},
+		{
+			Name: "DefaultQueryParamsValidWithNoRedirectsInvalid",
+			Config: &Config{
+				DefaultQueryParams: map[string]string{"this": "that"},
+				NoRedirects:        true,
+			},
+			Valid: false,
+		},
+	}
+
+	for _, testCase := range testCases {
+		testCase := testCase
+		t.Run(
+			testCase.Name,
+			func(t *testing.T) {
+				err := testCase.Config.isDefaultQueryParamsValid()
+				if err != nil && testCase.Valid {
+					t.Fatalf("Expected test not to fail")
+				}
+
+				if err == nil && !testCase.Valid {
+					t.Fatalf("Expected test to fail")
+				}
+			},
+		)
+	}
+}
