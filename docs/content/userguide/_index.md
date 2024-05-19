@@ -325,6 +325,24 @@ yaml example:
     yourparam: "yourvalue"
 ```
 
+## Default Query Params for Authentication
+
+Similarly, you can add `--default-query-params` on the Gogatekeeper configuration, they'll be passed to the IdP with the pre-defined values on the configuration. Notice that these parameters will override the ones defined on `--allowed-query-params`.
+
+The example below injects `kc_idp_hint=google` and `ui_locales=pt_BR` as query parameters with pre-defined values to the IdP:
+
+```bash
+  --default-query-params="kc_idp_hint=google" \
+  --default-query-params="ui_locales=pt_BR"
+```
+
+Using the yaml configuration, this would be:
+```yaml
+  default-query-params:
+    kc_idp_hint: "google"
+    ui_locales: "pt_BR"
+```
+
 ## TCP proxy with HTTP CONNECT
 
 You can protect your TCP services with gogatekeeper by adding `CONNECT` HTTP method to list of `custom-http-methods`. On client side you will need to pass of course token in `Authorization` header (righ now there are few clients which could make HTTP connect with `Bearer` token and then forward tcp, e.g. gost proxy - but only in static way, some IDE provide HTTP CONNECT functionality for db connectors but only with `Basic` authentication, we would like to add this functionality to gatekeeper in future). This setup will authenticate connection at start and will create tunnel to your backend service. Please use with care and ensure that it allows connection only to intended services, otherwise it can be missused for various attacks.
